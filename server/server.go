@@ -1,7 +1,8 @@
 package server
 
 import (
-	"io"
+	"IPchecker/src"
+	"encoding/json"
 	"net/http"
 )
 
@@ -12,5 +13,12 @@ func Init() *http.ServeMux {
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "OK")
+	response := src.GetCountryName("8.8.8.8")
+	js, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
 }

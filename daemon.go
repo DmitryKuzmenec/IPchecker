@@ -19,9 +19,8 @@ func main() {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	//go func() {
+
 	if err := httpServer.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
-	//}()
 }
