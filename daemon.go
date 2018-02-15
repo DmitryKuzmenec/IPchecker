@@ -13,11 +13,10 @@ import (
 func main() {
 	config.Init()
 	httpServer := &http.Server{
-		Addr:           viper.GetString("addr"),
-		Handler:        server.Init(),
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		MaxHeaderBytes: 1 << 20,
+		Addr:         viper.GetString("addr"),
+		Handler:      server.Init(),
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 
 	if err := httpServer.ListenAndServe(); err != nil {

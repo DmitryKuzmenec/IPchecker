@@ -8,7 +8,3 @@ type ResolverResponse struct {
 	CountTotal  int
 	Source      string
 }
-
-type Resolver interface {
-	GetCountryName(string) *ResolverResponse
-}
