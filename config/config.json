@@ -1,3 +1,7 @@
 {
-  "addr": "localhost:8080"
+  "addr": "localhost:8080",
+  "cache_ttl": 10,
+  "providers": {
+    "nekudo":  100
+  }
 }

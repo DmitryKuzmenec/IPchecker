@@ -1,24 +1,25 @@
 package server
 
 import (
-	"IPchecker/Sources/test"
-	"IPchecker/Sources/test2"
-	"IPchecker/Sources/test3"
+	"IPchecker/Sources/freegeoip"
+	"IPchecker/Sources/nekudo"
+	"IPchecker/db"
 	"IPchecker/types"
 	"encoding/json"
 	"net/http"
+	"strings"
 )
 
 var RequestChan chan string
 var ResponseChan chan types.ResolverResponse
 
 func init() {
-	RequestChan = make(chan string)
-	ResponseChan = make(chan types.ResolverResponse)
+	RequestChan = make(chan string, 1000)
+	ResponseChan = make(chan types.ResolverResponse, 1000)
 
-	test.Init(RequestChan, ResponseChan)
-	test2.Init(RequestChan, ResponseChan)
-	test3.Init(RequestChan, ResponseChan)
+	//Providers
+	freegeoip.Init(RequestChan, ResponseChan)
+	nekudo.Init(RequestChan, ResponseChan)
 
 }
 
@@ -29,15 +30,27 @@ func Init() *http.ServeMux {
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	RequestChan <- r.RemoteAddr
-	select {
-	case response := <-ResponseChan:
-		js, err := json.Marshal(response)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+
+	ip := strings.Split(r.RemoteAddr, ":")[0]
+	response := types.ResolverResponse{}
+	ip = "80.80.124.1"
+	db := db.Init()
+	// Check cache
+	name := db.Get(ip)
+	if name != "" {
+		response = types.ResolverResponse{IP: ip, CountryName: name, Source: "cache"}
+	} else {
+		RequestChan <- ip
+		select {
+		case response = <-ResponseChan:
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
 	}
+
+	js, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
 }
