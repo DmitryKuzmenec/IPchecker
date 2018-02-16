@@ -33,7 +33,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 
 	ip := strings.Split(r.RemoteAddr, ":")[0]
 	response := types.ResolverResponse{}
-	ip = "80.80.124.1"
+
 	db := db.Init()
 	// Check cache
 	name := db.Get(ip)
