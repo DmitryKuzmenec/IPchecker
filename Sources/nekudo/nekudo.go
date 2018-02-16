@@ -1,6 +1,7 @@
 package nekudo
 
 import (
+	"IPchecker/config"
 	"IPchecker/db"
 	"IPchecker/types"
 	"encoding/json"
@@ -28,15 +29,17 @@ type resJson struct {
 }
 
 func Init(req chan string, res chan types.ResolverResponse) {
-	providers := viper.GetStringMapString("providers")
+	config.Init()
+	max_per_min := viper.GetInt("provider.Necudo")
 
 	//skip initialisation if not exists at config
-	if _, ok := providers["nekudo"]; !ok {
+	if max_per_min <= 0 {
 		return
 	}
 
 	go func() {
-		shaper := time.Tick(1 * time.Second)
+
+		shaper := time.Tick(100000 / time.Duration(max_per_min) * time.Millisecond)
 		db := db.Init()
 		for {
 			select {

@@ -27,15 +27,15 @@ type resJson struct {
 
 func Init(req chan string, res chan types.ResolverResponse) {
 	config.Init()
-	providers := viper.GetStringMapString("providers")
+	max_per_min := viper.GetInt("provider.Freegeoip")
 
 	//skip initialisation if not exists at config
-	if _, ok := providers["freegeoip"]; !ok {
+	if max_per_min <= 0 {
 		return
 	}
 
 	go func() {
-		shaper := time.Tick(1 * time.Second)
+		shaper := time.Tick(100000 / time.Duration(max_per_min) * time.Millisecond)
 		db := db.Init()
 		for {
 			select {

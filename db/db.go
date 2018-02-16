@@ -38,10 +38,12 @@ func init() {
 		for {
 			select {
 			case data := <-set:
-				db.Update(func(tx *buntdb.Tx) error {
-					tx.Set(data.IP, data.CountryName, &buntdb.SetOptions{Expires: true, TTL: ttl})
-					return nil
-				})
+				if data.CountryName != "" && data.IP != "" {
+					db.Update(func(tx *buntdb.Tx) error {
+						tx.Set(data.IP, data.CountryName, &buntdb.SetOptions{Expires: true, TTL: ttl})
+						return nil
+					})
+				}
 			}
 		}
 	}()

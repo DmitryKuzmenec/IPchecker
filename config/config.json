@@ -1,8 +1,6 @@
 {
   "addr": "localhost:8080",
   "cache_ttl": 100,
-  "providers": {
-    "nekudo":  100,
-    "freegeoip": 100
-  }
+  "provider.Necudo": 1000,
+  "provider.Freegeoip": 1000
 }
